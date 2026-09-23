@@ -216,7 +216,7 @@ Apply `supabase/migrations/20260907150700_admin_moderation.sql` in the **reqly**
 The `Remove account` control uses `/api/admin-delete-user`. It requires `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to be configured as Vercel environment variables. Never expose the service-role key in browser JavaScript.
 
 ## Password setup and Instagram browser
-
+ 
 The login bar supports password sign-in and sends a password-recovery email through **Set or reset password**. The linked page shows a form to save the new password. In Supabase Authentication URL Configuration, add the deployed site URL as an allowed redirect URL. Instagram's in-app browser controls its own storage, so Glares shows visitors an **Open in browser** instruction; only the device browser can reliably retain the session across Instagram launches.
 
 ## What's next after this MVP
