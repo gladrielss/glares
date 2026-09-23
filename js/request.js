@@ -425,8 +425,8 @@ async function uploadRecImage(user, file) {
   const fullPath = `${user.id}/${Date.now()}-${full.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
   const thumbPath = `${user.id}/thumb/${Date.now()}-${thumb.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
   const [fullUp, thumbUp] = await Promise.all([
-    supabase.storage.from("request-images").upload(fullPath, full.blob),
-    supabase.storage.from("request-images").upload(thumbPath, thumb.blob),
+    supabase.storage.from("request-images").upload(fullPath, full.blob, PHOTO_UPLOAD_OPTIONS),
+    supabase.storage.from("request-images").upload(thumbPath, thumb.blob, PHOTO_UPLOAD_OPTIONS),
   ]);
   if (fullUp.error) throw fullUp.error;
   if (thumbUp.error) throw thumbUp.error;

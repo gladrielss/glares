@@ -437,7 +437,7 @@ function initCategoryRow() {
 
 async function uploadSizedImage(user, sized, subdir) {
   const path = `${user.id}/${subdir}${Date.now()}-${sized.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
-  const { error } = await supabase.storage.from("request-images").upload(path, sized.blob);
+  const { error } = await supabase.storage.from("request-images").upload(path, sized.blob, PHOTO_UPLOAD_OPTIONS);
   if (error) throw error;
   return supabase.storage.from("request-images").getPublicUrl(path).data.publicUrl;
 }

@@ -18,6 +18,9 @@ const IMAGE_QUALITY = 0.82;
 const IMAGE_THUMB_MAX_EDGE = 480;
 const IMAGE_THUMB_QUALITY = 0.75;
 
+// File names are unique per upload, so browsers can keep photos for a year.
+const PHOTO_UPLOAD_OPTIONS = { cacheControl: "31536000" };
+
 function loadImageElement(file) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);

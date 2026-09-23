@@ -133,7 +133,7 @@ async function uploadAvatar(user, file) {
   // The cropper already outputs 512, this just guarantees it for any path in.
   const { blob, name } = await prepareImageForUpload(file, { maxEdge: 512 });
   const path = `avatars/${user.id}/${Date.now()}-${name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
-  const { error } = await supabase.storage.from("request-images").upload(path, blob);
+  const { error } = await supabase.storage.from("request-images").upload(path, blob, PHOTO_UPLOAD_OPTIONS);
   if (error) throw error;
   const { data } = supabase.storage.from("request-images").getPublicUrl(path);
   return data.publicUrl;
