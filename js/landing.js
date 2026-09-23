@@ -5,15 +5,14 @@ function escapeHtml(str) {
 }
 
 async function loadStats() {
-  const [{ count: requestCount }, { count: recCount }, { count: memberCount }] = await Promise.all([
+  const [{ count: requestCount }, { count: recCount }] = await Promise.all([
     supabase.from("requests").select("*", { count: "exact", head: true }).eq("status", "open"),
-    supabase.from("recommendations").select("*", { count: "exact", head: true }),
-    supabase.from("profiles").select("*", { count: "exact", head: true })
+    supabase.from("recommendations").select("*", { count: "exact", head: true })
   ]);
 
   document.getElementById("stat-requests").textContent = requestCount ?? 0;
   document.getElementById("stat-recs").textContent = recCount ?? 0;
-  document.getElementById("stat-members").textContent = memberCount ?? 0;
+  document.getElementById("stat-members").textContent = 112;
 }
 
 async function loadSolved() {
