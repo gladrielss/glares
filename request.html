@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Request — Glares</title>
+<link rel="preconnect" href="https://zrlrbucvnadnxsoqtgfd.supabase.co" crossorigin />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Cormorant+Garamond:wght@500;600&display=swap" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/cinema.css" />
+<link rel="stylesheet" href="css/typography-overrides.css" />
+</head>
+<body class="request-page profile-page">
+
+<div class="header-wrap">
+  <header class="site-header">
+    <a href="index.html" class="logo">Glares</a>
+    <div id="auth-bar"></div>
+  </header>
+</div>
+
+<main>
+  <a href="index.html#feed-section" class="back-link">&larr; back to feed</a>
+
+  <section id="request-detail" class="request-detail">
+    <p class="empty-state">Loading...</p>
+  </section>
+
+  <div class="promote-box" id="promote-box" style="display:none;">
+    <button class="btn btn-ghost" id="promote-btn">Promote this listing</button>
+    <p class="promote-hint" id="promote-hint"></p>
+  </div>
+
+  <div class="promote-modal" id="promote-modal">
+    <div class="promote-modal-inner">
+      <button class="panel-close" id="promote-close-btn">&times;</button>
+      <h2 class="section-title">Promote this listing</h2>
+      <div id="promote-modal-body">
+        <p class="empty-state">Loading...</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="rec-form" id="rec-form-section" style="display:none;">
+    <h2 class="section-title">Recommend something</h2>
+    <form id="rec-form">
+      <div class="field-row">
+        <textarea id="rec-note" placeholder="What's your recommendation? Why does it fit?" required></textarea>
+      </div>
+      <div class="field-row">
+        <input type="url" id="rec-link" placeholder="Link (optional)" />
+      </div>
+      <div class="field-row">
+        <label class="upload-label" for="rec-image-file">
+          <span id="rec-upload-label-text">+ Add a photo</span>
+        </label>
+        <input type="file" id="rec-image-file" accept="image/*" style="display:none;" />
+      </div>
+      <p class="field-hint">Any shape or size works, as long as it's at least 480×480px.</p>
+      <img id="rec-image-preview" style="display:none;" />
+      <button type="submit" class="btn">Post recommendation</button>
+    </form>
+  </section>
+
+  <h2 class="section-title">Recommendations</h2>
+  <div id="rec-list" class="rec-list">
+    <p class="empty-state">Loading...</p>
+  </div>
+</main>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="js/supabase-client.js"></script>
+<script defer src="js/icons.js"></script>
+<script defer src="js/image-utils.js"></script>
+<script defer src="js/recently-viewed.js"></script>
+<script defer src="js/auth.js"></script>
+<script defer src="js/push-config.js"></script>
+<script defer src="js/push.js"></script>
+<script defer src="js/messages-badge.js"></script>
+<script defer src="js/affiliate-config.js"></script>
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+<script defer src="js/share-card.js"></script>
+<script defer src="js/request.js"></script>
+<script defer src="js/profile-links.js"></script>
+<script defer src="js/cinema.js"></script>
+</body>
+</html>

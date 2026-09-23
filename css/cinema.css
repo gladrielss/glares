@@ -1,0 +1,81 @@
+/* ===================== Cinema layer =====================
+   One idea, applied everywhere: things resolve into focus.
+
+   A photograph arrives soft, desaturated and slightly too large, then
+   settles — the same grade language The Cut uses to pass judgement on a
+   post, now carrying the whole product. Moving between pages dissolves
+   rather than blinking white.
+
+   Two things this layer must never do, both learned the hard way:
+
+   1. Touch layout. Everything is opacity / transform / filter, because the
+      masonry measures real card heights while these run and a transform on
+      a measured box corrupts the grid.
+
+   2. Leave a mark. The effect is a keyframe animation rather than a
+      transition, so it always ends on the element's own styling — its own
+      grade, its own hover scale — and js/cinema.js strips the class on
+      animationend. A transition could be frozen mid-flight by a throttled
+      tab and strand every photo at 1.05 scale, which is exactly what
+      happened before. Animations also outrank normal declarations while
+      they run, so the pages that grade their own photos with heavier
+      selectors don't need fighting with !important. */
+
+/* ---- page to page ---- */
+@view-transition { navigation: auto; }
+
+::view-transition-old(root) {
+  animation: cinema-dip-out .22s var(--premium-ease) both;
+}
+::view-transition-new(root) {
+  animation: cinema-dip-in .4s var(--premium-ease) both;
+}
+@keyframes cinema-dip-out { to { opacity: 0; transform: scale(.994); } }
+@keyframes cinema-dip-in { from { opacity: 0; transform: scale(1.007); } }
+
+/* ---- waiting to be shown ---- */
+.cinema-armed { opacity: 0; }
+
+/* ---- the focus pull ---- */
+.cinema-shot { animation: cinema-focus-pull .95s var(--premium-ease) both; }
+
+@keyframes cinema-focus-pull {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+    filter: blur(8px) saturate(.55);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Phones and low-memory machines get the same move without the blur, which
+   is the expensive part of it — a large photo has to be re-rasterised every
+   frame it is blurred. The fade and the settle carry the idea on their own. */
+.cinema-lite .cinema-shot { animation-name: cinema-focus-pull-lite; }
+
+@keyframes cinema-focus-pull-lite {
+  from { opacity: 0; transform: scale(1.03); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---- blocks that rise into place ---- */
+.cinema-riser { animation: cinema-rise-in .7s var(--premium-ease) both; }
+
+@keyframes cinema-rise-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+.cinema-drift { will-change: transform, opacity; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation-duration: .01ms; }
+  .cinema-armed { opacity: 1; }
+  .cinema-shot, .cinema-riser { animation: none; }
+  .cinema-drift { transform: none !important; opacity: 1 !important; }
+}

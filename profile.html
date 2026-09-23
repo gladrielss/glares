@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Profile — Glares</title>
+<link rel="preconnect" href="https://zrlrbucvnadnxsoqtgfd.supabase.co" crossorigin />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Cormorant+Garamond:wght@500;600&display=swap" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/cinema.css" />
+<style>
+  .ig-header {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(20px, 5vw, 48px);
+    padding: 32px 0 20px;
+    flex-wrap: wrap;
+  }
+  .profile-avatar-big {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--pill);
+    flex-shrink: 0;
+    border: 2px solid var(--line);
+  }
+  .profile-avatar-big-empty { background: var(--accent); }
+  .ig-info-col { flex: 1; min-width: 220px; }
+  .ig-username-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .profile-name {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .ig-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ig-stats-row {
+    display: flex;
+    gap: clamp(18px, 4vw, 40px);
+    margin-bottom: 16px;
+  }
+  .ig-stat { display: flex; flex-direction: column; font-size: 14px; }
+  .ig-stat strong { font-size: 17px; font-weight: 800; }
+  .ig-stat span { color: var(--ink-soft); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .profile-bio { font-size: 14px; color: var(--ink-soft); margin: 0 0 4px; max-width: 480px; white-space: pre-wrap; }
+
+  .ig-tabs {
+    display: flex;
+    gap: 4px;
+    border-top: 1px solid var(--line);
+    margin-top: 12px;
+  }
+  .ig-tab {
+    flex: 1;
+    max-width: 220px;
+    background: none;
+    border: none;
+    border-top: 2px solid transparent;
+    margin-top: -1px;
+    padding: 14px 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .ig-tab.active { color: var(--ink); border-top-color: var(--ink); font-weight: 700; }
+
+  [data-panel][hidden] { display: none; }
+  .ig-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .ig-grid-item {
+    position: relative;
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #171b25, #343b4d);
+    color: #fff;
+    text-decoration: none;
+  }
+  .ig-grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ig-grid-item-fallback {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    padding: 10px; text-align: center; font-family: var(--display); font-weight: 700;
+    font-size: 13px; line-height: 1.2;
+  }
+  .ig-grid-item.has-image .ig-grid-item-fallback { display: none; }
+  .ig-grid-item-overlay {
+    position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 5px;
+    padding: 10px;
+    background: linear-gradient(to top, rgba(4,6,10,.8), transparent 55%);
+  }
+  .ig-grid-item-tag {
+    align-self: flex-start;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    background: rgba(255,255,255,.18);
+    backdrop-filter: blur(4px);
+    padding: 3px 7px;
+    border-radius: 999px;
+  }
+  .ig-grid-item-name {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .ig-grid-item-tags { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+  .ig-grid-item-tags:empty { display: none; }
+  .ig-grid-item.is-pinned { box-shadow: 0 0 0 2px var(--ink); }
+  .ig-grid-item-pinned {
+    position: absolute; top: 8px; left: 8px; z-index: 2;
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    background: rgba(0,0,0,.62); color: #fff; padding: 4px 8px 4px 6px; border-radius: 999px;
+  }
+  .ig-grid-item-pinned svg { width: 11px; height: 11px; }
+  .ig-pin-btn {
+    position: absolute; top: 8px; right: 8px; z-index: 3;
+    width: 30px; height: 30px; border-radius: 50%; border: none; padding: 0;
+    display: grid; place-items: center; cursor: pointer;
+    background: rgba(0,0,0,.5); color: #fff;
+    opacity: 0; transition: opacity .15s ease, background .15s ease;
+  }
+  .ig-pin-btn svg { width: 15px; height: 15px; }
+  .ig-grid-item:hover .ig-pin-btn, .ig-pin-btn:focus-visible, .ig-pin-btn.is-pinned { opacity: 1; }
+  .ig-pin-btn.is-pinned { background: #fff; color: #111; }
+  @media (hover: none) { .ig-pin-btn { opacity: .85; } }
+
+  .profile-bio-text { color: var(--ink); }
+  .profile-links-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 8px; }
+  .profile-link-chip {
+    display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+    font: 500 12px var(--mono); color: var(--ink);
+    background: var(--pill); border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 12px; cursor: pointer; text-decoration: none;
+  }
+  .profile-link-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .profile-link-chip svg { width: 14px; height: 14px; flex: 0 0 auto; }
+  .profile-link-chip:hover { border-color: var(--ink); }
+  .taste-match {
+    display: inline-block; margin: 2px 0 8px; font-size: 13px; color: var(--ink-soft);
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px;
+  }
+  .taste-match strong { color: var(--ink); font-weight: 800; }
+
+  .profile-rec-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .profile-rec-item {
+    display: block;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .profile-rec-item:hover { border-color: var(--ink); }
+  .profile-rec-note { font-size: 13px; margin: 0 0 6px; }
+  .profile-rec-for { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+
+  .liked-visibility-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 4px 0 14px;
+    padding: 10px 14px;
+    background: var(--pill);
+    border-radius: 12px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 600px) {
+    .ig-header { gap: 16px; padding: 20px 0 12px; }
+    .profile-avatar-big { width: 72px; height: 72px; }
+    .ig-stats-row { gap: 18px; }
+    .ig-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .ig-grid-item { border-radius: 12px; }
+    .ig-grid-item-name { font-size: 11px; }
+  }
+</style>
+</head>
+<body class="profile-page">
+
+<div class="header-wrap">
+  <header class="site-header">
+    <a href="index.html" class="logo">Glares</a>
+    <div class="feed-tabs-row" id="feed-tabs">
+      <button type="button" class="feed-tab" data-mode="shuffle">Shuffle</button>
+      <button type="button" class="feed-tab active" data-mode="staffpick">Staff Picks</button>
+      <button type="button" class="feed-tab" data-mode="recent">Recent</button>
+    </div>
+    <div id="auth-bar"></div>
+  </header>
+</div>
+
+<main>
+  <a href="index.html#feed-section" class="back-link">&larr; back to feed</a>
+
+  <div id="profile-hero-container">
+    <p class="empty-state">Loading...</p>
+  </div>
+
+  <div class="ig-tabs" id="profile-tabs">
+    <button type="button" class="ig-tab active" data-tab="requests">Requests</button>
+    <button type="button" class="ig-tab" data-tab="recs">Recommendations</button>
+    <button type="button" class="ig-tab" data-tab="liked">Liked</button>
+  </div>
+
+  <div id="profile-requests" class="ig-grid" data-panel="requests">
+    <p class="empty-state">Loading...</p>
+  </div>
+
+  <div id="profile-recs" class="profile-rec-list" data-panel="recs" hidden>
+    <p class="empty-state">Loading...</p>
+  </div>
+
+  <div id="profile-liked-container" data-panel="liked" hidden>
+    <div class="liked-visibility-row" id="liked-visibility-row" hidden>
+      <span id="liked-visibility-label">Your liked posts are public</span>
+      <button type="button" class="btn btn-ghost" id="liked-visibility-toggle">Make private</button>
+    </div>
+    <div id="profile-liked" class="ig-grid">
+      <p class="empty-state">Loading...</p>
+    </div>
+  </div>
+</main>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="js/supabase-client.js"></script>
+<script defer src="js/icons.js"></script>
+<script defer src="js/image-utils.js"></script>
+<script defer src="js/recently-viewed.js"></script>
+<script defer src="js/auth.js"></script>
+<script defer src="js/push-config.js"></script>
+<script defer src="js/push.js"></script>
+<script defer src="js/messages-badge.js"></script>
+<script defer src="js/share-card.js"></script>
+<script defer src="js/profile-share.js"></script>
+<script defer src="js/profile.js"></script>
+<script defer src="js/masonry.js"></script>
+<script defer src="js/cinema.js"></script>
+</body>
+</html>

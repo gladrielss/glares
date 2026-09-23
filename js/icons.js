@@ -1,0 +1,41 @@
+// Shared inline-SVG icon set for compact/icon-only UI (mobile header, like
+// button, song badge). Thin, rounded line-art — consistent weight across
+// the set for a more refined feel.
+const ICON_STROKE = 1.6;
+const ICONS = {
+  inbox: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5h3.6l1.7 2.6h4.4l1.7-2.6h3.6"/><path d="M6.2 6.2h11.6a1 1 0 0 1 .96.73l1.68 6a1 1 0 0 1 .04.27V17a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2v-3.8a1 1 0 0 1 .04-.27l1.68-6a1 1 0 0 1 .96-.73Z"/></svg>`,
+  heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.2-4.4-9.6-9C.8 7.6 2.5 4.4 6 3.9c2-.3 3.9.7 6 3.1 2.1-2.4 4-3.4 6-3.1 3.5.5 5.2 3.7 3.6 7.1-2.4 4.6-9.6 9-9.6 9Z"/></svg>`,
+  music: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18.2V5.6L21 3.5v12.7"/><circle cx="6.2" cy="18.2" r="2.8"/><circle cx="18.2" cy="16.2" r="2.8"/></svg>`,
+  pencil: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 20.5H4.5v-7l10.7-10.7a1.4 1.4 0 0 1 2 0l2.3 2.3a1.4 1.4 0 0 1 0 2Z"/><path d="M13.5 5.5l3.5 3.5"/></svg>`,
+  logout: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 20.5H6a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h3.5"/><path d="M15.5 16.5l4.5-4.5-4.5-4.5"/><path d="M20 12H9.5"/></svg>`,
+  star: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.9 6.3.7-4.7 4.4 1.3 6.3L12 17.2l-5.6 3.1 1.3-6.3-4.7-4.4 6.3-.7Z"/></svg>`,
+  eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.8"/></svg>`,
+  eyeOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 3.5l17 17"/><path d="M10.6 5.7c.45-.1.9-.15 1.4-.15 6 0 9.5 6.5 9.5 6.5a15.4 15.4 0 0 1-3.3 4.1M6.5 6.9A15.6 15.6 0 0 0 2.5 12s3.5 6.5 9.5 6.5c1.3 0 2.5-.3 3.6-.85"/><path d="M9.9 10.1a2.8 2.8 0 0 0 3.9 3.9"/></svg>`,
+  share: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11"/><path d="M8.4 7.1 12 3.5l3.6 3.6"/><path d="M6 12.4H5a1.5 1.5 0 0 0-1.5 1.5v5.1A1.5 1.5 0 0 0 5 20.5h14a1.5 1.5 0 0 0 1.5-1.5v-5.1a1.5 1.5 0 0 0-1.5-1.5h-1"/></svg>`,
+  bag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8.5h10l1 12a1.5 1.5 0 0 1-1.5 1.6H7.5A1.5 1.5 0 0 1 6 20.5Z"/><path d="M9 8.5V6.8a3 3 0 0 1 6 0v1.7"/></svg>`,
+  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="6.3"/><path d="M15.4 15.4l5.1 5.1"/></svg>`,
+  pin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5h5l-.8 5.2 3.3 3.3v1.5H7v-1.5l3.3-3.3Z"/><path d="M12 13.5v7"/></svg>`,
+  link: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M10.2 13.8a4 4 0 0 0 5.7 0l3.1-3.1a4 4 0 0 0-5.7-5.7l-1.4 1.4"/><path d="M13.8 10.2a4 4 0 0 0-5.7 0L5 13.3a4 4 0 0 0 5.7 5.7l1.4-1.4"/></svg>`,
+  instagram: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="currentColor"/></svg>`,
+  check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${ICON_STROKE}" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.8 4.8L19.5 7"/></svg>`,
+};
+
+// Keeps a `--header-h` custom property on <html> in sync with the real,
+// rendered height of the page's fixed/sticky header so content never
+// starts underneath it (heights change a lot between logged-in/out and
+// mobile/desktop layouts).
+function syncHeaderHeightVar() {
+  const header = document.querySelector("header.site-header, .landing-header");
+  if (!header) return;
+  const setVar = () => {
+    document.documentElement.style.setProperty("--header-h", `${Math.ceil(header.getBoundingClientRect().height) + 18}px`);
+  };
+  setVar();
+  if (window.ResizeObserver) {
+    new ResizeObserver(setVar).observe(header);
+  } else {
+    window.addEventListener("resize", setVar);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", syncHeaderHeightVar);

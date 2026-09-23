@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;700;800&family=Montserrat:wght@400;500&display=swap');
+
+/* Post titles -> match "For Him/Her/Unisex" tile font exactly */
+.ticket-title,
+.request-detail h1,
+.trending-title,
+.solved-title,
+.reel-item-title {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+
+/* Post detail/description text -> Montserrat */
+.ticket-desc,
+.request-detail p,
+.rec-note {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Category tag -> bold */
+.ticket-cat {
+  font-weight: 700 !important;
+}
+
+/* Username -> Instagram-style (clean, semibold, tight tracking) */
+.ticket-author,
+.auth-user,
+.solved-sub,
+.rec-footer span:first-child {
+  font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  font-size: 13px !important;
+}
+
+/* Feed profile picture -> bigger, Instagram-feed size */
+.mini-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  margin-right: 8px !important;
+}
+
+/* Mobile feed cards: avatar + name need to stay small enough that the
+   slim footer bar can actually fit them. This file's rules above use
+   !important and load after style.css, so the mobile shrink has to live
+   here too or it gets silently overridden. */
+@media (max-width: 600px) {
+  #board .ticket-footer .mini-avatar {
+    width: 18px !important;
+    height: 18px !important;
+    flex: 0 0 18px !important;
+    margin-right: 5px !important;
+  }
+  #board .ticket-footer .ticket-author {
+    font-size: 9px !important;
+  }
+}
+/* Force feed cards to always be visible — the scroll-fade animation
+   was unreliable and left cards permanently invisible. */
+.ticket, .rec-card {
+  opacity: 1 !important;
+  transform: none !important;
+
+}
+/* Safari has a rendering bug where hover transforms inside a CSS
+   multi-column layout cause cards to flicker/disappear. Disable the
+   hover lift to avoid it. */
+.ticket:hover {
+  transform: none !important;
+}

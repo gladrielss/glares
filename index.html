@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Glares — taste, on request</title>
+<link rel="preconnect" href="https://zrlrbucvnadnxsoqtgfd.supabase.co" crossorigin />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Cormorant+Garamond:wght@500;600&display=swap" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/cinema.css" />
+<link rel="stylesheet" href="css/typography-overrides.css" />
+</head>
+<body class="landing-body">
+
+<section class="hero">
+  <div class="hero-texture"></div>
+  <header class="landing-header">
+    <div class="landing-logo">Glares</div>
+    <div class="feed-tabs-row" id="feed-tabs">
+      <button type="button" class="feed-tab" data-mode="shuffle">Shuffle</button>
+      <button type="button" class="feed-tab active" data-mode="staffpick">Staff Picks</button>
+      <button type="button" class="feed-tab" data-mode="recent">Recent</button>
+    </div>
+    <div id="auth-bar"></div>
+  </header>
+
+  <div class="hero-content">
+    <h1 class="hero-word">Glares</h1>
+    <p class="hero-tagline">Taste, on request.<br>Real people recommending real things.</p>
+  </div>
+
+  <div class="hero-stats" id="hero-stats">
+    <div class="stat"><span class="stat-num" id="stat-requests">—</span><span class="stat-label">Open requests</span></div>
+    <div class="stat"><span class="stat-num" id="stat-recs">—</span><span class="stat-label">Recommendations made</span></div>
+    <div class="stat"><span class="stat-num" id="stat-members">—</span><span class="stat-label">Members</span></div>
+  </div>
+</section>
+
+<a href="store.html" class="store-banner" aria-label="Store — official Glares merch">
+  <span class="store-banner-arrow" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+  </span>
+  <span class="store-banner-title">Store</span>
+  <span class="store-banner-sub">Wear the taste. Official Glares merch.</span>
+</a>
+
+<main id="feed-section">
+  <h1 class="page-title">Open requests</h1>
+  <p class="page-sub">Post what you're looking for. Anyone can recommend.</p>
+
+  <div class="section-label-row" id="trending-heading" style="display:none;">
+    <h2>Trending</h2>
+  </div>
+  <div class="trending-row" id="trending-strip"></div>
+
+  <div class="sections-row" id="sections-row">
+    <a href="cut.html" class="section-card section-cut" id="section-cut">
+      <span class="section-eyebrow">Pass / Keep</span>
+      <span class="section-label">The Cut</span>
+    </a>
+    <a href="reel.html#For%20Him" class="section-card section-him" id="section-him" data-autoplay-audience="For Him">
+      <span class="section-label">For Him<span class="section-count" id="count-him"></span></span>
+    </a>
+    <a href="reel.html#For%20Her" class="section-card section-her" id="section-her" data-autoplay-audience="For Her">
+      <span class="section-label">For Her<span class="section-count" id="count-her"></span></span>
+    </a>
+    <a href="reel.html#Unisex" class="section-card section-unisex" id="section-unisex" data-autoplay-audience="Unisex">
+      <span class="section-label">Unisex<span class="section-count" id="count-unisex"></span></span>
+    </a>
+    <a href="index.html?cat=Accessories#feed-section" class="section-card section-accessories" id="section-accessories">
+      <span class="section-label">Accessories</span>
+    </a>
+    <a href="index.html?cat=Places#feed-section" class="section-card section-places" id="section-places">
+      <span class="section-label">Places</span>
+    </a>
+  </div>
+
+  <div class="category-row" id="category-row">
+    <button class="cat-chip active" data-cat="">All</button>
+    <button class="cat-chip" data-cat="Clothing">Clothing</button>
+    <button class="cat-chip" data-cat="Shoes">Shoes</button>
+    <button class="cat-chip" data-cat="Accessories">Accessories</button>
+    <button class="cat-chip" data-cat="Home">Home</button>
+    <button class="cat-chip" data-cat="Tech">Tech</button>
+    <button class="cat-chip" data-cat="Music">Music</button>
+    <button class="cat-chip" data-cat="Places">Places</button>
+    <button class="cat-chip" data-cat="Other">Other</button>
+  </div>
+
+  <div id="board" class="board">
+    <p class="empty-state">Loading requests...</p>
+  </div>
+</main>
+
+<section class="solved-section" id="solved">
+  <p class="solved-eyebrow">Solved by the community</p>
+  <div class="solved-grid" id="solved-grid">
+    <p class="empty-state">Loading...</p>
+  </div>
+</section>
+
+<button class="btn btn-fab" id="open-request-btn">+ Post a request</button>
+
+<div class="new-request-panel" id="new-request-panel">
+  <section class="new-request">
+    <button class="panel-close" id="close-panel-btn">&times;</button>
+    <h2>Post a request</h2>
+    <form id="request-form">
+      <div class="field-row">
+        <textarea id="req-title" rows="1" enterkeyhint="enter" placeholder="Name it (optional if you add a photo)"></textarea>
+      </div>
+      <p class="field-hint">Press Enter for a new line — handy for lyrics.</p>
+      <div class="field-row">
+        <textarea id="req-desc" enterkeyhint="enter" placeholder="Details — style, size, occasion, anything that helps"></textarea>
+      </div>
+      <div class="field-row">
+        <input type="text" id="req-budget" placeholder="Budget (e.g. $30-50)" />
+        <select id="req-category">
+          <option value="">Category</option>
+          <option>Clothing</option>
+          <option>Shoes</option>
+          <option>Accessories</option>
+          <option>Home</option>
+          <option>Tech</option>
+          <option>Music</option>
+          <option>Places</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label class="upload-label" for="req-image-file">
+          <span id="upload-label-text">+ Add a photo</span>
+        </label>
+        <input type="file" id="req-image-file" accept="image/*" style="display:none;" />
+      </div>
+      <p class="field-hint">Any shape or size works, as long as it's at least 480×480px.</p>
+      <img id="req-image-preview" style="display:none;" />
+      <div class="field-row">
+        <select id="req-audience">
+          <option value="">Audience (optional)</option>
+          <option>For Him</option>
+          <option>For Her</option>
+          <option>Unisex</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <input type="url" id="req-spotify" placeholder="Spotify track link (optional)" />
+      </div>
+      <p class="field-hint">Paste any open.spotify.com/track/... link to attach a song.</p>
+      <button type="submit" class="btn">Post request</button>
+    </form>
+  </section>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="js/supabase-client.js"></script>
+<script defer src="js/icons.js"></script>
+<script defer src="js/image-utils.js"></script>
+<script defer src="js/recently-viewed.js"></script>
+<script defer src="js/auth.js"></script>
+<script defer src="js/push-config.js"></script>
+<script defer src="js/push.js"></script>
+<script defer src="js/messages-badge.js"></script>
+<script defer src="js/text-post-card.js"></script>
+<script defer src="js/app.js"></script>
+<script defer src="js/landing.js"></script>
+<script defer src="js/profile-links.js"></script>
+<script defer src="js/song-search.js"></script>
+<script defer src="js/masonry.js"></script>
+<script defer src="js/cinema.js"></script>
+</body>
+</html>
