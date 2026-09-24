@@ -17,6 +17,10 @@ const CARD_QUALITY = 0.94;
 const CARD_BRAND = "Glares";
 const CARD_SLOGAN = "Taste, on request";
 const CARD_FOOTER_H = 96;
+// Instagram draws its round sound button over the bottom-right corner of feed
+// posts that have music (about 110px of a 1080px-wide image), so the Post
+// format ends its right-hand footer text short of it.
+const IG_SOUND_BUTTON_CLEARANCE = 96;
 
 const SHARE_BACKGROUNDS = ["liquid", "black", "white"];
 
@@ -457,27 +461,45 @@ async function buildShareCard(post, { background = "liquid", format = "story", s
     }
   }
 
+  // The Post format insets both sides equally so the footer stays symmetrical.
+  const footerInset = CARD_PAD + (format === "post" ? IG_SOUND_BUTTON_CLEARANCE : 0);
+  const footerLeft = footerInset;
+  const footerRight = W - footerInset;
+
   // ---- footer left: brand + slogan ----
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = theme.soft;
   ctx.font = "500 26px 'IBM Plex Mono', monospace";
-  ctx.fillText(CARD_SLOGAN, CARD_PAD, footerBottom);
+  ctx.fillText(CARD_SLOGAN, footerLeft, footerBottom);
+  const sloganEnd = footerLeft + ctx.measureText(CARD_SLOGAN).width;
   ctx.fillStyle = theme.ink;
   ctx.font = "600 56px 'Cormorant Garamond', serif";
-  ctx.fillText(CARD_BRAND, CARD_PAD, footerBottom - 38);
+  ctx.fillText(CARD_BRAND, footerLeft, footerBottom - 38);
+  const brandEnd = footerLeft + ctx.measureText(CARD_BRAND).width;
 
   // ---- footer right: price + who asked ----
+  // Each line shrinks if it would run into the text on its left.
+  const fitRight = (text, weight, size, minSize, leftEnd) => {
+    const room = footerRight - leftEnd - 32;
+    while (size > minSize) {
+      ctx.font = `${weight} ${size}px Inter, sans-serif`;
+      if (ctx.measureText(text).width <= room) break;
+      size -= 2;
+    }
+    ctx.font = `${weight} ${size}px Inter, sans-serif`;
+  };
   ctx.textAlign = "right";
   if (hasAuthor) {
+    const text = `asked by ${post.username}`;
     ctx.fillStyle = theme.soft;
-    ctx.font = "500 34px Inter, sans-serif";
-    ctx.fillText(`asked by ${post.username}`, W - CARD_PAD, footerBottom);
+    fitRight(text, 500, 34, 22, sloganEnd);
+    ctx.fillText(text, footerRight, footerBottom);
   }
   if (hasBudget) {
     ctx.fillStyle = theme.ink;
-    ctx.font = "700 48px Inter, sans-serif";
-    ctx.fillText(post.budget, W - CARD_PAD, footerBottom - (hasAuthor ? 46 : 0));
+    fitRight(post.budget, 700, 48, 28, hasAuthor ? brandEnd : Math.max(brandEnd, sloganEnd));
+    ctx.fillText(post.budget, footerRight, footerBottom - (hasAuthor ? 46 : 0));
   }
   ctx.textAlign = "left";
 
