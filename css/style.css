@@ -3154,3 +3154,26 @@ body.is-pushing .cut-shell .cut-hint {
   height: 1em;
   flex-shrink: 0;
 }
+
+/* Landing hero: the hand-lettered brush wordmark, drawn in the hero's text
+   colour through a mask (images/glares-wordmark.svg). */
+.hero-wordmark {
+  display: block;
+  width: min(620px, 86vw);
+  aspect-ratio: 725 / 481.3;
+  background: currentColor;
+  -webkit-mask: url(../images/glares-wordmark.svg) left center / contain no-repeat;
+  mask: url(../images/glares-wordmark.svg) left center / contain no-repeat;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
