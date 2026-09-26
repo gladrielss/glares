@@ -554,6 +554,22 @@ function initImagePreview() {
   });
 }
 
+// form.reset() misses the photo preview and the song picker's note, and puts
+// a hidden input back to the last value it was given rather than emptying it,
+// so the song link has to be cleared by hand.
+function clearRequestForm(form) {
+  form.reset();
+  document.getElementById("req-spotify").value = "";
+  const songNote = document.getElementById("req-spotify-results");
+  if (songNote) songNote.innerHTML = "";
+  const preview = document.getElementById("req-image-preview");
+  if (preview.src.startsWith("blob:")) URL.revokeObjectURL(preview.src);
+  preview.removeAttribute("src");
+  preview.style.display = "none";
+  document.getElementById("upload-label-text").textContent = "+ Add a photo";
+  autoGrowTextarea(document.getElementById("req-title"));
+}
+
 async function initNewRequestPanel() {
   const openBtn = document.getElementById("open-request-btn");
   const closeBtn = document.getElementById("close-panel-btn");
@@ -636,8 +652,7 @@ async function initNewRequestPanel() {
         return;
       }
 
-      e.target.reset();
-      autoGrowTextarea(document.getElementById("req-title"));
+      clearRequestForm(e.target);
       panel.classList.remove("open");
       loadFeed();
     } finally {
