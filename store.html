@@ -59,6 +59,15 @@
     display: flex; align-items: center; justify-content: center;
     font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
   }
+  .product-remove-btn {
+    position: absolute; z-index: 3; top: 10px; right: 10px;
+    width: 30px; height: 30px; border-radius: 50%; border: none;
+    background: rgba(4,6,10,.55); backdrop-filter: blur(4px);
+    color: #fff; font-size: 18px; line-height: 1;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .product-remove-btn:hover { background: rgba(200,40,40,.85); }
+  .product-remove-btn:disabled { opacity: .5; cursor: default; }
   .product-card-name { font-weight: 700; font-size: 14px; margin: 0 0 2px; }
   .product-card-price { font-family: var(--mono); font-size: 13px; color: var(--accent); margin: 0; }
 

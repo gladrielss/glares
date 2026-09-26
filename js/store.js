@@ -50,11 +50,46 @@ async function loadStoreGrid() {
         ${p.image_url ? `<img src="${p.thumb_url || p.image_url}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async">` : ""}
         ${soldOut ? `<div class="product-card-soldout">Sold out</div>` : ""}
         ${isAdmin && !p.is_active ? `<div class="product-card-soldout">Hidden</div>` : ""}
+        ${isAdmin ? `<button type="button" class="product-remove-btn" data-id="${p.id}" title="Remove from store" aria-label="Remove from store">&times;</button>` : ""}
       </div>
       <p class="product-card-name">${escapeHtml(p.name)}</p>
       <p class="product-card-price">${formatPrice(p.price_mnt)}</p>
     </a>`;
   }).join("");
+
+  if (isAdmin) wireRemoveButtons(grid);
+}
+
+// Deletes the product. One that's been ordered can't be deleted without
+// erasing those orders (the database refuses), so it's hidden instead.
+function wireRemoveButtons(grid) {
+  grid.querySelectorAll(".product-remove-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.dataset.id;
+      const name = btn.closest(".product-card").querySelector(".product-card-name").textContent;
+      if (!confirm(`Remove "${name}" from the store?`)) return;
+      btn.disabled = true;
+
+      const { data: deleted, error } = await supabase.from("products").delete().eq("id", id).select("id");
+      if (error?.code === "23503") {
+        const { data: hidden, error: hideError } = await supabase.from("products")
+          .update({ is_active: false }).eq("id", id).select("id");
+        if (hideError || !hidden?.length) {
+          alert("Couldn't remove it: " + (hideError?.message || "sign in again as an admin."));
+          btn.disabled = false;
+          return;
+        }
+        alert(`"${name}" has orders, so it was hidden from the store instead of deleted. Its orders are kept.`);
+      } else if (error || !deleted?.length) {
+        alert("Couldn't remove it: " + (error?.message || "sign in again as an admin."));
+        btn.disabled = false;
+        return;
+      }
+      loadStoreGrid();
+    });
+  });
 }
 
 function initAddProductPanel() {
