@@ -3159,11 +3159,17 @@ body.is-pushing .cut-shell .cut-hint {
    colour through a mask (images/glares-wordmark.svg). */
 .hero-wordmark {
   display: block;
-  width: min(620px, 86vw);
+  /* In ems of the heading's own size, so it scales like the typed "Glares"
+     it replaced: about 15% wider than that word on every screen. */
+  width: 3.4em;
+  max-width: 86vw;
   aspect-ratio: 725 / 481.3;
   background: currentColor;
   -webkit-mask: url(../images/glares-wordmark.svg) left center / contain no-repeat;
   mask: url(../images/glares-wordmark.svg) left center / contain no-repeat;
+}
+@media (max-width: 600px) {
+  .hero-wordmark { width: 3.05em; }
 }
 
 .visually-hidden {
