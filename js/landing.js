@@ -21,7 +21,7 @@ async function loadSolved() {
   // "Solved" = a request that has at least one favorited recommendation.
   const { data: favRecs, error } = await supabase
     .from("recommendations")
-    .select("request_id, requests!recommendations_request_id_fkey(id, title, image_url, thumb_url, profiles!requests_user_id_fkey(username))")
+    .select("request_id, requests!recommendations_request_id_fkey(id, title, image_url, thumb_url, profiles!requests_user_id_fkey(username, is_admin))")
     .eq("is_favorite", true)
     .limit(12);
 
@@ -43,7 +43,7 @@ async function loadSolved() {
         ? `<img src="${r.thumb_url || r.image_url}" alt="" class="solved-thumb" loading="lazy" decoding="async">`
         : `<div class="solved-thumb solved-thumb-empty"></div>`}
       ${r.title ? `<p class="solved-title">${escapeHtml(r.title)}</p>` : ""}
-      <p class="solved-sub">${r.profiles?.username ?? "someone"}</p>
+      <p class="solved-sub">${displayName(r.profiles)}</p>
     </a>
   `).join("");
 }

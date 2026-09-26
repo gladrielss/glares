@@ -78,7 +78,7 @@ async function loadRequest() {
   const [{ data: r, error }, { data: likes }, user] = await Promise.all([
     supabase
       .from("requests")
-      .select("id, title, description, budget, category, spotify_url, image_url, image_width, image_height, is_sponsored, found_recommendation_id, created_at, user_id, profiles!requests_user_id_fkey(username, avatar_url)")
+      .select("id, title, description, budget, category, spotify_url, image_url, image_width, image_height, is_sponsored, found_recommendation_id, created_at, user_id, profiles!requests_user_id_fkey(username, avatar_url, is_admin)")
       .eq("id", requestId)
       .single(),
     supabase.from("likes").select("user_id").eq("request_id", requestId),
@@ -112,7 +112,7 @@ async function loadRequest() {
     <p>${escapeHtml(r.description ?? "")}</p>
     ${embed ? `<div class="spotify-player-shell" data-track-player><div id="request-spotify-player"></div><button class="spotify-play-hint" type="button" data-play-spotify>Tap to play on Spotify</button><iframe class="spotify-embed-fallback" src="${embed}" width="100%" height="152" frameborder="0" allow="encrypted-media"></iframe></div>` : ""}
     <div class="request-meta">
-      <span class="ticket-author">${r.profiles?.avatar_url ? `<img src="${r.profiles.avatar_url}" class="mini-avatar" width="36" height="36" loading="lazy" decoding="async">` : `<span class="mini-avatar mini-avatar-empty"></span>`}${r.profiles?.username ?? "someone"}</span>
+      <span class="ticket-author">${r.profiles?.avatar_url ? `<img src="${r.profiles.avatar_url}" class="mini-avatar" width="36" height="36" loading="lazy" decoding="async">` : `<span class="mini-avatar mini-avatar-empty"></span>`}${displayName(r.profiles)}</span>
       ${r.budget ? `<span class="ticket-budget">Budget: ${escapeHtml(r.budget)}</span>` : ""}
       <span>${new Date(r.created_at).toLocaleDateString()}</span>
     </div>
@@ -347,7 +347,7 @@ async function loadRecommendations() {
   const [{ data: recs, error }, user, profile] = await Promise.all([
     supabase
       .from("recommendations")
-      .select("id, note, link, image_url, thumb_url, image_width, image_height, is_favorite, created_at, user_id, profiles(username, avatar_url)")
+      .select("id, note, link, image_url, thumb_url, image_width, image_height, is_favorite, created_at, user_id, profiles(username, avatar_url, is_admin)")
       .eq("request_id", requestId)
       .order("is_favorite", { ascending: false })
       .order("created_at", { ascending: false }),
@@ -383,7 +383,7 @@ async function loadRecommendations() {
       <p class="rec-note">${escapeHtml(rec.note)}</p>
       ${rec.link ? `<a class="rec-link" href="${escapeHtml(rec.link)}" target="_blank" rel="noopener">${escapeHtml(rec.link)}</a>` : ""}
       <div class="rec-footer">
-        <span class="ticket-author">${rec.profiles?.avatar_url ? `<img src="${rec.profiles.avatar_url}" class="mini-avatar" width="36" height="36" loading="lazy" decoding="async">` : `<span class="mini-avatar mini-avatar-empty"></span>`}${rec.profiles?.username ?? "someone"}</span>
+        <span class="ticket-author">${rec.profiles?.avatar_url ? `<img src="${rec.profiles.avatar_url}" class="mini-avatar" width="36" height="36" loading="lazy" decoding="async">` : `<span class="mini-avatar mini-avatar-empty"></span>`}${displayName(rec.profiles)}</span>
         <span class="rec-actions">
           ${isOwner && !helped(rec) ? `<button class="fav-btn" data-found="${rec.id}" title="Mark your post as found with this recommendation">This helped</button>` : ""}
           ${isOwner && helped(rec) ? `<button class="fav-btn fav-btn-undo" data-found="">Undo</button>` : ""}

@@ -28,7 +28,7 @@ async function loadConversations() {
   const convoIds = data.map((c) => c.id);
 
   const [{ data: profiles }, { data: unread }] = await Promise.all([
-    supabase.from("profiles").select("id, username, avatar_url").in("id", otherIds),
+    supabase.from("profiles").select("id, username, avatar_url, is_admin").in("id", otherIds),
     supabase.from("messages").select("conversation_id").in("conversation_id", convoIds).is("read_at", null).neq("sender_id", currentUser.id)
   ]);
 
@@ -43,7 +43,7 @@ async function loadConversations() {
       <a href="#${c.id}" class="messages-list-item${c.id === activeConversationId ? " active" : ""}" data-conversation="${c.id}">
         ${profile?.avatar_url ? `<img src="${profile.avatar_url}" class="messages-list-avatar">` : `<span class="messages-list-avatar messages-list-avatar-empty"></span>`}
         <div class="messages-list-meta">
-          <div class="messages-list-name"><span>${escapeHtml(profile?.username ?? "unknown")}</span>${unreadCount ? `<span class="messages-unread-dot"></span>` : ""}</div>
+          <div class="messages-list-name"><span>${displayName(profile, "unknown")}</span>${unreadCount ? `<span class="messages-unread-dot"></span>` : ""}</div>
           <div class="messages-list-preview">${escapeHtml(c.last_message_preview ?? "Say hello")}</div>
         </div>
       </a>`;
@@ -72,12 +72,12 @@ async function openConversation(conversationId) {
 
   let otherProfile = null;
   if (conversation) {
-    const { data } = await supabase.from("profiles").select("username, avatar_url").eq("id", otherParticipant(conversation)).single();
+    const { data } = await supabase.from("profiles").select("username, avatar_url, is_admin").eq("id", otherParticipant(conversation)).single();
     otherProfile = data;
   }
 
   threadEl.innerHTML = `
-    <div class="messages-thread-header"><a href="#" class="back-to-list" id="back-to-list">&larr;</a> ${escapeHtml(otherProfile?.username ?? "conversation")}</div>
+    <div class="messages-thread-header"><a href="#" class="back-to-list" id="back-to-list">&larr;</a> ${displayName(otherProfile, "conversation")}</div>
     <div class="messages-thread-body" id="messages-thread-body"><p class="empty-state">Loading...</p></div>
     <form class="messages-thread-compose" id="messages-compose-form">
       <input type="text" id="messages-compose-input" placeholder="Message ${escapeHtml(otherProfile?.username ?? "")}" autocomplete="off" required>

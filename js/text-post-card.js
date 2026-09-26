@@ -36,7 +36,7 @@ function textPostBodyHtml(r, likeButtonHtml = "") {
 function ticketFooterHtml(r) {
   return `
         <div class="ticket-footer">
-          <span class="ticket-author">${r.profiles?.avatar_url ? `<img src="${r.profiles.avatar_url}" class="mini-avatar" width="36" height="36" loading="lazy" decoding="async">` : `<span class="mini-avatar mini-avatar-empty"></span>`}${r.profiles?.username ?? "someone"}</span>
+          <span class="ticket-author">${r.profiles?.avatar_url ? `<img src="${r.profiles.avatar_url}" class="mini-avatar" width="36" height="36" loading="lazy" decoding="async">` : `<span class="mini-avatar mini-avatar-empty"></span>`}${displayName(r.profiles)}</span>
           ${r.budget ? `<span class="ticket-budget">${textPostEscape(r.budget)}</span>` : "<span></span>"}
         </div>`;
 }

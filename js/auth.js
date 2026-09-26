@@ -485,7 +485,7 @@ async function renderAuthBar() {
       ${searchButtonHtml()}
       <button id="avatar-btn" class="avatar-btn" title="${profile?.username ?? "you"}" aria-label="Your profile">
         ${profile?.avatar_url ? `<img src="${profile.avatar_url}" class="avatar-thumb" />` : `<span class="avatar-thumb avatar-thumb-empty"></span>`}
-        <span class="auth-user">${profile?.username ?? "you"}</span>
+        <span class="auth-user">${displayName(profile, "you")}</span>
       </button>
       <button id="edit-profile-btn" class="btn btn-ghost icon-btn" title="Edit profile" aria-label="Edit profile">${ICONS.pencil}<span class="btn-label">Edit</span></button>
       <button id="signout-btn" class="btn btn-ghost icon-btn" title="Sign out" aria-label="Sign out">${ICONS.logout}<span class="btn-label">Sign out</span></button>

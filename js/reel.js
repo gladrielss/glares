@@ -32,7 +32,7 @@ async function loadReel() {
 
   let query = supabase
     .from("requests")
-    .select("id, title, description, budget, category, audience, image_url, spotify_url, created_at, profiles!requests_user_id_fkey(username)")
+    .select("id, title, description, budget, category, audience, image_url, spotify_url, created_at, profiles!requests_user_id_fkey(username, is_admin)")
     .eq("status", "open")
     .order("created_at", { ascending: false });
 
@@ -74,7 +74,7 @@ function renderReel() {
         ${r.title ? `<h2 class="reel-item-title">${escapeHtml(r.title)}</h2>` : ""}
         <p class="reel-item-desc">${escapeHtml(r.description ?? "")}</p>
         <div class="reel-item-footer">
-          <span>${r.profiles?.username ?? "someone"}</span>
+          <span>${displayName(r.profiles)}</span>
           ${r.budget ? `<span class="ticket-budget">${escapeHtml(r.budget)}</span>` : ""}
         </div>
         ${r.spotify_url ? `<div class="reel-spotify" id="spotify-${r.id}" data-uri="${spotifyTrackUri(r.spotify_url)}"></div>` : ""}

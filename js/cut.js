@@ -130,7 +130,6 @@ function buildCard(post) {
   el.className = "cut-card";
   el.dataset.id = post.id;
 
-  const asker = post.profiles?.username ?? "someone";
   el.innerHTML = `
     <div class="cut-photo">
       <img src="${escapeHtml(post.thumb_url || post.image_url)}" alt="" decoding="async">
@@ -145,7 +144,7 @@ function buildCard(post) {
       <div class="cut-card-bottom">
         ${post.title ? `<h2 class="cut-card-title">${escapeHtml(post.title.split("\n")[0])}</h2>` : ""}
         <div class="cut-card-meta">
-          <span>asked by ${escapeHtml(asker)}</span>
+          <span>asked by ${displayName(post.profiles)}</span>
           ${post.budget ? `<span class="cut-card-budget">${escapeHtml(post.budget)}</span>` : ""}
         </div>
       </div>
@@ -568,7 +567,7 @@ async function loadCut() {
   const [{ data, error }, user] = await Promise.all([
     supabase
       .from("requests")
-      .select("id, title, budget, category, audience, image_url, thumb_url, found_recommendation_id, created_at, profiles!requests_user_id_fkey(username)")
+      .select("id, title, budget, category, audience, image_url, thumb_url, found_recommendation_id, created_at, profiles!requests_user_id_fkey(username, is_admin)")
       .eq("status", "open")
       .not("image_url", "is", null)
       .order("created_at", { ascending: false }),

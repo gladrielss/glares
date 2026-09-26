@@ -41,7 +41,7 @@ function profileShareUrl(username) {
 }
 
 async function fetchProfileByUsername(name) {
-  const columns = "id, username, avatar_url, created_at, bio, profile_spotify_url, likes_are_public, instagram_handle, pinned_request_id";
+  const columns = "id, username, avatar_url, created_at, bio, profile_spotify_url, likes_are_public, instagram_handle, pinned_request_id, is_admin";
   const exact = await supabase.from("profiles").select(columns).eq("username", name).maybeSingle();
   if (exact.error || exact.data) return exact;
   // Someone typed the link with different capitals than the name was saved with.
@@ -178,7 +178,7 @@ async function loadProfile() {
         : `<span class="profile-avatar-big profile-avatar-big-empty"></span>`}
       <div class="ig-info-col">
         <div class="ig-username-row">
-          <h1 class="profile-name">${escapeHtml(profile.username)}</h1>
+          <h1 class="profile-name">${displayName(profile)}</h1>
           <div class="ig-actions">
             ${viewer && !isOwnProfile ? `<button class="btn profile-follow-btn" id="follow-profile-btn">${viewerFollowsProfile ? "Following" : "Follow"}</button>` : ""}
             ${viewer && !isOwnProfile ? `<button class="btn btn-ghost" id="message-profile-btn">Message</button>` : ""}

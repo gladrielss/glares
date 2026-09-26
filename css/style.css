@@ -3125,3 +3125,16 @@ body.is-pushing .cut-shell .cut-hint {
   transition: opacity .7s ease;
   pointer-events: none;
 }
+
+/* Admin usernames: Instagram blue with a verified check (see displayName). */
+.verified-name {
+  color: #0095F6 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: .22em;
+}
+.verified-name svg {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}

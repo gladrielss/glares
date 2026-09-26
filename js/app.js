@@ -45,7 +45,7 @@ async function loadFeed() {
 
   const requestsQuery = supabase
     .from("requests")
-    .select("id, title, description, budget, category, audience, spotify_url, image_url, thumb_url, image_width, image_height, is_sponsored, is_staff_pick, staff_pick_rank, found_recommendation_id, user_id, created_at, profiles!requests_user_id_fkey(username, avatar_url)")
+    .select("id, title, description, budget, category, audience, spotify_url, image_url, thumb_url, image_width, image_height, is_sponsored, is_staff_pick, staff_pick_rank, found_recommendation_id, user_id, created_at, profiles!requests_user_id_fkey(username, avatar_url, is_admin)")
     .eq("status", "open")
     .order("is_sponsored", { ascending: false })
     .order("created_at", { ascending: false });

@@ -72,13 +72,13 @@ function openSearchOverlay() {
     const [people, posts] = await Promise.all([
       supabase
         .from("profiles")
-        .select("username, avatar_url, bio")
+        .select("username, avatar_url, bio, is_admin")
         .ilike("username", pattern)
         .order("username")
         .limit(6),
       supabase
         .from("requests")
-        .select("id, title, description, category, image_url, thumb_url, found_recommendation_id, profiles!requests_user_id_fkey(username)")
+        .select("id, title, description, category, image_url, thumb_url, found_recommendation_id, profiles!requests_user_id_fkey(username, is_admin)")
         .or(`title.ilike.${pattern},description.ilike.${pattern},category.ilike.${pattern}`)
         .order("created_at", { ascending: false })
         .limit(12)
@@ -107,7 +107,7 @@ function openSearchOverlay() {
                 ? `<img src="${p.avatar_url}" alt="" class="search-avatar" loading="lazy" decoding="async">`
                 : `<span class="search-avatar search-avatar-empty"></span>`}
               <span class="search-person-text">
-                <strong>${searchEscape(p.username)}</strong>
+                <strong>${displayName(p)}</strong>
                 ${p.bio ? `<span>${searchEscape(p.bio.split("\n")[0])}</span>` : ""}
               </span>
             </a>`).join("")}
@@ -123,7 +123,7 @@ function openSearchOverlay() {
               <span class="search-post-meta">
                 ${r.found_recommendation_id ? `<span class="found-badge">Found</span>` : ""}
                 ${r.title ? `<strong>${searchEscape(r.title.split("\n")[0])}</strong>` : ""}
-                <span>${searchEscape(r.profiles?.username ?? "")}</span>
+                <span>${displayName(r.profiles, "")}</span>
               </span>
             </a>`).join("")}
         </div>` : ""}`;
