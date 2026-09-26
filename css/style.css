@@ -437,7 +437,16 @@ textarea { resize: vertical; min-height: 70px; }
   padding-top: 10px;
 }
 
-.ticket-budget { color: var(--accent); font-weight: 600; }
+/* Prices: the wordmark's serif in ink, with even-height numbers. */
+.ticket-budget {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+  font-size: 1.35em;
+  font-variant-numeric: lining-nums;
+  letter-spacing: .01em;
+  color: var(--ink);
+}
+.reel-item-footer .ticket-budget { color: #fff; }
 
 .ticket-song {
   margin-top: 10px;
@@ -1768,7 +1777,6 @@ header.site-header, .landing-header {
   .ticket-author { display: inline-flex; align-items: center; gap: 5px; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .mini-avatar { width: 24px; height: 24px; flex: 0 0 24px; border: 2px solid rgba(255,255,255,.92); border-radius: 50%; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,.16); }
   .mini-avatar-empty { display: inline-block; background: linear-gradient(135deg, #20242d, #a8b0bc); }
-  .ticket-budget { color: #a45d20; font-weight: 700; }
 }
 
 .instagram-browser-prompt {
@@ -2125,7 +2133,7 @@ body:not(.profile-page) header.site-header .logo, body:not(.profile-page) header
   }
   #board .ticket-footer .ticket-author { color: #171717; }
   #board .ticket-footer .mini-avatar { width: 18px; height: 18px; flex: 0 0 18px; margin-right: 5px; }
-  #board .ticket-budget { font-size: 9px; color: #a45d20; }
+  #board .ticket-budget { font-size: 12px; }
   #board .ticket, .trending-card { border: none !important; box-shadow: none !important; }
   #board .ticket-title {
     font-size: 12.5px;
@@ -2853,7 +2861,15 @@ body.search-open { overflow: hidden; }
   letter-spacing: .05em;
   color: rgba(255,255,255,.66);
 }
-.cut-card-budget { color: var(--accent); white-space: nowrap; }
+.cut-card-budget {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+  font-size: 1.4em;
+  font-variant-numeric: lining-nums;
+  letter-spacing: .01em;
+  color: #fff;
+  white-space: nowrap;
+}
 
 /* ---- verdict stamps ---- */
 .cut-stamp {
