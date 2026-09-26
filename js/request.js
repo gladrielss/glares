@@ -40,11 +40,16 @@ window.onSpotifyIframeApiReady = (api) => {
 };
 
 function tryPlaySpotify(r) {
+  if (spotifyController) { spotifyController.play(); return; }
   const player = document.getElementById("request-spotify-player");
   const uri = spotifyTrackUri(r.spotify_url);
   if (!player || !uri || !spotifyIframeApi) return;
   spotifyIframeApi.createController(player, { uri, width: "100%", height: "152" }, (controller) => {
     spotifyController = controller;
+    // The playable player replaces the backup embed, so only one shows.
+    const shell = document.querySelector("[data-track-player]");
+    shell?.querySelector(".spotify-embed-fallback")?.remove();
+    shell?.querySelector("[data-play-spotify]")?.remove();
     controller.play();
   });
 }
