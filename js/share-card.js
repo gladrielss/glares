@@ -593,7 +593,7 @@ async function buildTextPostPoster(post) {
   let y = TEXT_POSTER_PAD + Math.max(0, (bodySpace - bodyH) / 2);
 
   if (hasTag) {
-    drawTagPill(ctx, post.category, TEXT_POSTER_PAD, y, { pillBg: "#F0EFEA", pillInk: "#E8952E" });
+    drawTagPill(ctx, post.category, TEXT_POSTER_PAD, y, { pillBg: "#F0EFEA", pillInk: "#0D0C96" });
     y += 52 + (title || descLines.length ? GAP_TAG : 0);
   }
 

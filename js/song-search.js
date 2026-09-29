@@ -23,7 +23,7 @@
     .song-result-loading { padding: 10px; font-size: 12px; color: #6B6B68; }
     .song-selected-tag {
       font-size: 12px;
-      color: #E8952E;
+      color: var(--accent);
       margin-top: 4px;
     }
   `;
