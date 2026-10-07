@@ -78,14 +78,15 @@ async function loadRequest() {
   const [{ data: r, error }, { data: likes }, user] = await Promise.all([
     supabase
       .from("requests")
-      .select("id, title, description, budget, category, spotify_url, image_url, image_width, image_height, is_sponsored, found_recommendation_id, created_at, user_id, profiles!requests_user_id_fkey(username, avatar_url, is_admin)")
+      .select("id, title, description, budget, category, spotify_url, image_url, image_width, image_height, is_sponsored, found_recommendation_id, created_at, user_id, status, profiles!requests_user_id_fkey(username, avatar_url, is_admin)")
       .eq("id", requestId)
       .single(),
     supabase.from("likes").select("user_id").eq("request_id", requestId),
     getCurrentUser()
   ]);
 
-  if (error || !r) {
+  const isArchived = r?.status === "archived";
+  if (error || !r || (isArchived && user?.id !== r.user_id)) {
     detail.innerHTML = `<p class="empty-state">Request not found.</p>`;
     return;
   }
@@ -103,6 +104,7 @@ async function loadRequest() {
     : "";
 
   detail.innerHTML = `
+    ${isArchived ? `<p class="archived-note">Archived. Only you can see this post. Restore it from the Archived tab on your profile.</p>` : ""}
     ${r.image_url ? `<div class="detail-image"><img src="${r.image_url}" alt=""${detailDims} decoding="async"><button type="button" class="like-btn${isLiked ? " is-liked" : ""}" id="detail-like-btn" aria-label="Like">${ICONS.heart}<span class="like-count">${likedBy.size ? likedBy.size : ""}</span></button></div>` : ""}
     <div class="request-tags">
       <span class="found-badge found-badge-lg" id="request-found-badge"${r.found_recommendation_id ? "" : " hidden"}>${ICONS.check}<span>Found</span></span>

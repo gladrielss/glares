@@ -54,11 +54,12 @@ async function profileExtras(env, profileId) {
     db.from("requests")
       .select("image_url")
       .eq("user_id", profileId)
+      .neq("status", "archived")
       .not("image_url", "is", null)
       .neq("image_url", "")
       .order("created_at", { ascending: false })
       .limit(1),
-    db.from("requests").select("id", { count: "exact", head: true }).eq("user_id", profileId)
+    db.from("requests").select("id", { count: "exact", head: true }).eq("user_id", profileId).neq("status", "archived")
   ]);
   return {
     coverImage: latest.data?.[0]?.image_url ?? null,

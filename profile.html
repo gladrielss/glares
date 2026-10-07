@@ -127,17 +127,47 @@
     background: rgba(0,0,0,.62); color: #fff; padding: 4px 8px 4px 6px; border-radius: 999px;
   }
   .ig-grid-item-pinned svg { width: 11px; height: 11px; }
-  .ig-pin-btn {
+  .ig-more-btn {
     position: absolute; top: 8px; right: 8px; z-index: 3;
     width: 30px; height: 30px; border-radius: 50%; border: none; padding: 0;
     display: grid; place-items: center; cursor: pointer;
     background: rgba(0,0,0,.5); color: #fff;
     opacity: 0; transition: opacity .15s ease, background .15s ease;
   }
-  .ig-pin-btn svg { width: 15px; height: 15px; }
-  .ig-grid-item:hover .ig-pin-btn, .ig-pin-btn:focus-visible, .ig-pin-btn.is-pinned { opacity: 1; }
-  .ig-pin-btn.is-pinned { background: #fff; color: #111; }
-  @media (hover: none) { .ig-pin-btn { opacity: .85; } }
+  .ig-more-btn svg { width: 16px; height: 16px; }
+  .ig-grid-item:hover .ig-more-btn, .ig-more-btn:focus-visible { opacity: 1; }
+  .ig-more-btn:hover { background: rgba(0,0,0,.72); }
+  @media (hover: none) { .ig-more-btn { opacity: .9; } }
+  .ig-tab[hidden] { display: none; }
+  .archived-hint { margin: 14px 0 10px; font-size: 13px; color: var(--ink-soft); }
+
+  /* Post options sheet (own profile): centred on desktop, bottom sheet on phones. */
+  .post-sheet-backdrop {
+    position: fixed; inset: 0; z-index: 300;
+    display: grid; place-items: center; padding: 16px;
+    background: rgba(0,0,0,.45);
+  }
+  .post-sheet {
+    width: min(360px, 100%);
+    background: var(--card); color: var(--ink);
+    border-radius: 18px; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,.28);
+    text-align: center;
+  }
+  .post-sheet-title { margin: 22px 20px 4px; font-weight: 700; font-size: 17px; }
+  .post-sheet-text { margin: 0 22px 18px; font-size: 13px; line-height: 1.45; color: var(--ink-soft); }
+  .post-sheet button {
+    display: block; width: 100%; padding: 15px 16px;
+    background: none; border: none; border-top: 1px solid var(--line);
+    font: 500 15px/1.2 var(--body); color: var(--ink); cursor: pointer;
+  }
+  .post-sheet > button:first-child { border-top: none; }
+  .post-sheet button:hover:not(:disabled) { background: var(--pill); }
+  .post-sheet button:disabled { opacity: .5; cursor: default; }
+  .post-sheet button.is-danger { color: #D32F2F; font-weight: 700; }
+  @media (max-width: 600px) {
+    .post-sheet-backdrop { place-items: end center; padding: 0 10px max(10px, env(safe-area-inset-bottom)); }
+  }
 
   .profile-bio-text { color: var(--ink); }
   .profile-links-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 8px; }
@@ -218,6 +248,7 @@
     <button type="button" class="ig-tab active" data-tab="requests">Requests</button>
     <button type="button" class="ig-tab" data-tab="recs">Recommendations</button>
     <button type="button" class="ig-tab" data-tab="liked">Liked</button>
+    <button type="button" class="ig-tab" data-tab="archived" id="archived-tab" hidden>Archived</button>
   </div>
 
   <div id="profile-requests" class="ig-grid" data-panel="requests">
@@ -236,6 +267,11 @@
     <div id="profile-liked" class="ig-grid">
       <p class="empty-state">Loading...</p>
     </div>
+  </div>
+
+  <div id="profile-archived-container" data-panel="archived" hidden>
+    <p class="archived-hint">Only you can see archived posts. Put one back on your profile any time.</p>
+    <div id="profile-archived" class="ig-grid"></div>
   </div>
 </main>
 

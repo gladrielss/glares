@@ -3191,3 +3191,14 @@ body.is-pushing .cut-shell .cut-hint {
 body:not(.profile-page) header.site-header :focus-visible,
 .cut-shell :focus-visible,
 .reel-body :focus-visible { outline-color: #fff; }
+
+/* Post page banner shown to the owner of an archived post. */
+.archived-note {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}

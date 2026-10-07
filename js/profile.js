@@ -67,6 +67,9 @@ function tasteMatch(viewerIds, profileIds) {
 let currentProfile = null;
 let viewingOwnProfile = false;
 let profileRequests = [];
+let archivedRequests = [];
+const PROFILE_POST_COLUMNS = "id, title, description, budget, category, image_url, thumb_url, image_width, image_height, spotify_url, created_at, is_staff_pick, staff_pick_rank, found_recommendation_id, status";
+let profileRecCount = 0;
 let profileFeedMode = "staffpick"; // "shuffle" | "staffpick" | "recent"
 
 function escapeHtml(str) {
@@ -128,11 +131,10 @@ async function loadProfile() {
   // sat on "Loading..." for the sum of every round trip instead of the slowest.
   const compareTaste = Boolean(viewer && !isOwnProfile && profile.likes_are_public);
   const [reqResult, recResult, followerResult, followingResult, followRow, viewerProfile, viewerLikes, profileLikes] = await Promise.all([
-    supabase
-      .from("requests")
-      .select("id, title, description, budget, category, image_url, thumb_url, image_width, image_height, spotify_url, created_at, is_staff_pick, staff_pick_rank, found_recommendation_id")
-      .eq("user_id", profile.id)
-      .order("created_at", { ascending: false }),
+    (isOwnProfile
+      ? supabase.from("requests").select(PROFILE_POST_COLUMNS).eq("user_id", profile.id)
+      : supabase.from("requests").select(PROFILE_POST_COLUMNS).eq("user_id", profile.id).neq("status", "archived")
+    ).order("created_at", { ascending: false }),
     supabase
       .from("recommendations")
       .select("id, note, created_at, request_id, requests!recommendations_request_id_fkey(id, title)")
@@ -148,8 +150,11 @@ async function loadProfile() {
     compareTaste ? supabase.from("likes").select("request_id").eq("user_id", profile.id) : Promise.resolve({ data: null })
   ]);
 
-  const requests = reqResult.data;
+  const allRequests = reqResult.data ?? [];
+  const requests = allRequests.filter(r => r.status !== "archived");
+  archivedRequests = isOwnProfile ? allRequests.filter(r => r.status === "archived") : [];
   const recs = recResult.data;
+  profileRecCount = recs?.length ?? 0;
   const followerCount = followerResult.count;
   const followingCount = followingResult.count;
   let viewerFollowsProfile = Boolean(followRow.data);
@@ -188,7 +193,7 @@ async function loadProfile() {
           </div>
         </div>
         <div class="ig-stats-row">
-          <div class="ig-stat"><strong>${postCount}</strong><span>Posts</span></div>
+          <div class="ig-stat"><strong id="stat-posts">${postCount}</strong><span>Posts</span></div>
           <div class="ig-stat"><strong id="stat-followers">${followerCount ?? 0}</strong><span>Followers</span></div>
           <div class="ig-stat"><strong>${followingCount ?? 0}</strong><span>Following</span></div>
           ${foundCount ? `<div class="ig-stat"><strong>${foundCount}</strong><span>Found</span></div>` : ""}
@@ -274,9 +279,11 @@ async function loadProfile() {
   if (reqResult.error) {
     reqContainer.innerHTML = `<p class="empty-state">Couldn't load requests: ${escapeHtml(reqResult.error.message)}</p>`;
   } else {
-    profileRequests = requests ?? [];
+    profileRequests = requests;
     renderProfileGrid();
   }
+  document.getElementById("archived-tab").hidden = !isOwnProfile;
+  if (isOwnProfile) renderArchivedGrid();
 
   if (recResult.error) {
     recContainer.innerHTML = `<p class="empty-state">Couldn't load recommendations: ${escapeHtml(recResult.error.message)}</p>`;
@@ -325,7 +332,7 @@ async function loadLikedPosts(profile, isOwnProfile) {
 
   const { data: liked, error } = await supabase
     .from("likes")
-    .select("request_id, created_at, requests(id, title, category, image_url, thumb_url)")
+    .select("request_id, created_at, requests(id, title, category, image_url, thumb_url, status)")
     .eq("user_id", profile.id)
     .order("created_at", { ascending: false });
 
@@ -334,7 +341,7 @@ async function loadLikedPosts(profile, isOwnProfile) {
     return;
   }
 
-  const posts = (liked ?? []).map(l => l.requests).filter(Boolean);
+  const posts = (liked ?? []).map(l => l.requests).filter(r => r && r.status !== "archived");
 
   if (!posts.length) {
     likedContainer.innerHTML = `<p class="empty-state">No liked posts yet.</p>`;
@@ -383,6 +390,23 @@ function profileFeedSourceList() {
   return profileRequests;
 }
 
+function profilePostCardHtml(r, isPinned) {
+  return `
+    <a href="request.html#${r.id}" class="ig-grid-item${r.image_url ? " has-image" : ""}${isPinned ? " is-pinned" : ""}">
+      ${r.image_url ? `<img src="${r.thumb_url || r.image_url}" alt="${escapeHtml(r.title || "")}" loading="lazy" decoding="async" onerror="this.parentElement.classList.remove('has-image'); this.remove()">` : ""}
+      <span class="ig-grid-item-fallback">${escapeHtml(r.title || r.description || "")}</span>
+      ${isPinned ? `<span class="ig-grid-item-pinned">${ICONS.pin}<span>Pinned</span></span>` : ""}
+      ${viewingOwnProfile ? `<button type="button" class="ig-more-btn" data-post-menu="${r.id}" title="Post options" aria-label="Post options" aria-haspopup="dialog">${ICONS.more}</button>` : ""}
+      <span class="ig-grid-item-overlay">
+        <span class="ig-grid-item-tags">
+          ${r.found_recommendation_id ? `<span class="found-badge">Found</span>` : ""}
+          ${r.category ? `<span class="ig-grid-item-tag">${escapeHtml(r.category)}</span>` : ""}
+        </span>
+        ${r.title ? `<span class="ig-grid-item-name">${escapeHtml(r.title)}</span>` : ""}
+      </span>
+    </a>`;
+}
+
 function renderProfileGrid() {
   const reqContainer = document.getElementById("profile-requests");
   const list = profileFeedSourceList();
@@ -396,23 +420,19 @@ function renderProfileGrid() {
   }
 
   const pinnedId = currentProfile?.pinned_request_id;
-  reqContainer.innerHTML = list.map(r => {
-    const isPinned = r.id === pinnedId;
-    return `
-    <a href="request.html#${r.id}" class="ig-grid-item${r.image_url ? " has-image" : ""}${isPinned ? " is-pinned" : ""}">
-      ${r.image_url ? `<img src="${r.thumb_url || r.image_url}" alt="${escapeHtml(r.title || "")}" loading="lazy" decoding="async" onerror="this.parentElement.classList.remove('has-image'); this.remove()">` : ""}
-      <span class="ig-grid-item-fallback">${escapeHtml(r.title || r.description || "")}</span>
-      ${isPinned ? `<span class="ig-grid-item-pinned">${ICONS.pin}<span>Pinned</span></span>` : ""}
-      ${viewingOwnProfile ? `<button type="button" class="ig-pin-btn${isPinned ? " is-pinned" : ""}" data-pin="${r.id}" title="${isPinned ? "Unpin from profile" : "Pin to top of profile"}" aria-label="${isPinned ? "Unpin from profile" : "Pin to top of profile"}">${ICONS.pin}</button>` : ""}
-      <span class="ig-grid-item-overlay">
-        <span class="ig-grid-item-tags">
-          ${r.found_recommendation_id ? `<span class="found-badge">Found</span>` : ""}
-          ${r.category ? `<span class="ig-grid-item-tag">${escapeHtml(r.category)}</span>` : ""}
-        </span>
-        ${r.title ? `<span class="ig-grid-item-name">${escapeHtml(r.title)}</span>` : ""}
-      </span>
-    </a>`;
-  }).join("");
+  reqContainer.innerHTML = list.map(r => profilePostCardHtml(r, r.id === pinnedId)).join("");
+}
+
+function renderArchivedGrid() {
+  const container = document.getElementById("profile-archived");
+  container.innerHTML = archivedRequests.length
+    ? archivedRequests.map(r => profilePostCardHtml(r, false)).join("")
+    : `<p class="empty-state">No archived posts.</p>`;
+}
+
+function updatePostCount() {
+  const stat = document.getElementById("stat-posts");
+  if (stat) stat.textContent = String(profileRequests.length + profileRecCount);
 }
 
 async function togglePinnedPost(requestId) {
@@ -429,13 +449,111 @@ async function togglePinnedPost(requestId) {
   }
 }
 
-function wirePinButtons() {
-  document.getElementById("profile-requests").addEventListener("click", (e) => {
-    const button = e.target.closest("[data-pin]");
-    if (!button) return;
-    e.preventDefault();
-    e.stopPropagation();
-    togglePinnedPost(button.dataset.pin);
+async function setPostArchived(requestId, archived) {
+  const { data, error } = await supabase.from("requests")
+    .update({ status: archived ? "archived" : "open" })
+    .eq("id", requestId)
+    .select("id");
+  if (error || !data?.length) {
+    alert("Couldn't update this post: " + (error?.message || "sign in again."));
+    return;
+  }
+  const from = archived ? profileRequests : archivedRequests;
+  const post = from.find(r => r.id === requestId);
+  if (!post) return;
+  post.status = archived ? "archived" : "open";
+  if (archived) {
+    profileRequests = profileRequests.filter(r => r.id !== requestId);
+    archivedRequests = [post, ...archivedRequests];
+    // Like Instagram, an archived post can't stay pinned.
+    if (currentProfile?.pinned_request_id === requestId) await togglePinnedPost(requestId);
+  } else {
+    archivedRequests = archivedRequests.filter(r => r.id !== requestId);
+    profileRequests = [post, ...profileRequests].sort((a, b) => b.created_at.localeCompare(a.created_at));
+  }
+  renderProfileGrid();
+  renderArchivedGrid();
+  updatePostCount();
+}
+
+async function deletePost(requestId) {
+  const { data, error } = await supabase.from("requests").delete().eq("id", requestId).select("id");
+  if (error || !data?.length) {
+    alert("Couldn't delete this post: " + (error?.message || "sign in again."));
+    return;
+  }
+  profileRequests = profileRequests.filter(r => r.id !== requestId);
+  archivedRequests = archivedRequests.filter(r => r.id !== requestId);
+  // The database clears the pin itself when the pinned post is deleted.
+  if (currentProfile?.pinned_request_id === requestId) currentProfile.pinned_request_id = null;
+  renderProfileGrid();
+  renderArchivedGrid();
+  updatePostCount();
+}
+
+function openPostMenu(requestId, opener) {
+  const isArchived = archivedRequests.some(r => r.id === requestId);
+  const isPinned = currentProfile?.pinned_request_id === requestId;
+  const backdrop = document.createElement("div");
+  backdrop.className = "post-sheet-backdrop";
+  backdrop.innerHTML = `<div class="post-sheet" role="dialog" aria-modal="true" aria-label="Post options"></div>`;
+  const sheet = backdrop.querySelector(".post-sheet");
+
+  const close = () => {
+    document.removeEventListener("keydown", onKey);
+    backdrop.remove();
+    opener?.focus();
+  };
+  const onKey = (e) => { if (e.key === "Escape") close(); };
+
+  const showOptions = () => {
+    sheet.innerHTML = isArchived
+      ? `<button type="button" data-act="unarchive">Show on profile</button>
+         <button type="button" class="is-danger" data-act="delete">Delete</button>
+         <button type="button" data-act="cancel">Cancel</button>`
+      : `<button type="button" data-act="pin">${isPinned ? "Unpin from profile" : "Pin to profile"}</button>
+         <button type="button" data-act="archive">Archive</button>
+         <button type="button" class="is-danger" data-act="delete">Delete</button>
+         <button type="button" data-act="cancel">Cancel</button>`;
+    sheet.querySelector("button").focus();
+  };
+  const showDeleteConfirm = () => {
+    sheet.innerHTML = `
+      <p class="post-sheet-title">Delete post?</p>
+      <p class="post-sheet-text">This can't be undone. Its likes and recommendations are deleted with it.${isArchived ? "" : " To hide it instead, archive it."}</p>
+      <button type="button" class="is-danger" data-act="confirm-delete">Delete</button>
+      <button type="button" data-act="cancel">Cancel</button>`;
+    sheet.querySelector("button").focus();
+  };
+
+  sheet.addEventListener("click", async (e) => {
+    const act = e.target.closest("[data-act]")?.dataset.act;
+    if (!act) return;
+    if (act === "cancel") return close();
+    if (act === "delete") return showDeleteConfirm();
+    sheet.querySelectorAll("button").forEach(b => { b.disabled = true; });
+    if (act === "pin") await togglePinnedPost(requestId);
+    if (act === "archive") await setPostArchived(requestId, true);
+    if (act === "unarchive") await setPostArchived(requestId, false);
+    if (act === "confirm-delete") await deletePost(requestId);
+    close();
+  });
+  backdrop.addEventListener("click", (e) => { if (e.target === backdrop) close(); });
+  document.addEventListener("keydown", onKey);
+
+  document.body.appendChild(backdrop);
+  showOptions();
+}
+
+function wirePostMenus() {
+  ["profile-requests", "profile-archived"].forEach((id) => {
+    document.getElementById(id).addEventListener("click", (e) => {
+      const button = e.target.closest("[data-post-menu]");
+      if (!button) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openPostMenu(button.dataset.postMenu, button);
+    });
   });
 }
 
@@ -467,13 +585,19 @@ function resetProfilePanels() {
   document.getElementById("profile-requests").innerHTML = `<p class="empty-state">Loading...</p>`;
   document.getElementById("profile-recs").innerHTML = `<p class="empty-state">Loading...</p>`;
   document.getElementById("profile-liked").innerHTML = `<p class="empty-state">Loading...</p>`;
+  document.getElementById("profile-archived").innerHTML = "";
   profileRequests = [];
+  archivedRequests = [];
+  // The Archived tab belongs to the owner; never leave it showing on someone else's profile.
+  const archivedTab = document.getElementById("archived-tab");
+  if (archivedTab.classList.contains("active")) document.querySelector('#profile-tabs [data-tab="requests"]').click();
+  archivedTab.hidden = true;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   wireProfileTabs();
   wireFeedTabs();
-  wirePinButtons();
+  wirePostMenus();
   loadProfile();
 
   window.addEventListener("hashchange", () => {

@@ -80,6 +80,7 @@ function openSearchOverlay() {
         .from("requests")
         .select("id, title, description, category, image_url, thumb_url, found_recommendation_id, profiles!requests_user_id_fkey(username, is_admin)")
         .or(`title.ilike.${pattern},description.ilike.${pattern},category.ilike.${pattern}`)
+        .neq("status", "archived")
         .order("created_at", { ascending: false })
         .limit(12)
     ]);

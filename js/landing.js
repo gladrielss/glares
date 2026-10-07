@@ -21,7 +21,7 @@ async function loadSolved() {
   // "Solved" = a request that has at least one favorited recommendation.
   const { data: favRecs, error } = await supabase
     .from("recommendations")
-    .select("request_id, requests!recommendations_request_id_fkey(id, title, image_url, thumb_url, profiles!requests_user_id_fkey(username, is_admin))")
+    .select("request_id, requests!recommendations_request_id_fkey(id, title, image_url, thumb_url, status, profiles!requests_user_id_fkey(username, is_admin))")
     .eq("is_favorite", true)
     .limit(12);
 
@@ -30,7 +30,7 @@ async function loadSolved() {
     return;
   }
 
-  const solved = favRecs.map(f => f.requests).filter(Boolean);
+  const solved = favRecs.map(f => f.requests).filter(r => r && r.status !== "archived");
 
   if (!solved.length) {
     grid.innerHTML = `<p class="empty-state">Nothing marked solved yet — be the first.</p>`;
