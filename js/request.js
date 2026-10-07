@@ -67,6 +67,14 @@ function revealOnScroll(selector) {
   items.forEach(el => observer.observe(el));
 }
 
+// Inline style for a photo box of the photo's displayed size: no wider than
+// the photo, the page, or what fits in 70% of the screen height. The same
+// formula is used by the instant preview in request.html.
+function detailImageBoxStyle(width, height, thumbUrl) {
+  const bg = thumbUrl ? ` background-image: url('${String(thumbUrl).replace(/'/g, "%27").replace(/"/g, "%22")}');` : "";
+  return `width: min(${width}px, 100%, calc(70vh * ${width} / ${height})); aspect-ratio: ${width} / ${height};${bg}`;
+}
+
 async function loadRequest() {
   const detail = document.getElementById("request-detail");
 
@@ -78,7 +86,7 @@ async function loadRequest() {
   const [{ data: r, error }, { data: likes }, user] = await Promise.all([
     supabase
       .from("requests")
-      .select("id, title, description, budget, category, spotify_url, image_url, image_width, image_height, is_sponsored, found_recommendation_id, created_at, user_id, status, profiles!requests_user_id_fkey(username, avatar_url, is_admin)")
+      .select("id, title, description, budget, category, spotify_url, image_url, thumb_url, image_width, image_height, is_sponsored, found_recommendation_id, created_at, user_id, status, profiles!requests_user_id_fkey(username, avatar_url, is_admin)")
       .eq("id", requestId)
       .single(),
     supabase.from("likes").select("user_id").eq("request_id", requestId),
@@ -97,15 +105,19 @@ async function loadRequest() {
   const likedBy = new Set((likes ?? []).map(l => l.user_id));
   const isLiked = user ? likedBy.has(user.id) : false;
 
-  // Known dimensions let the browser hold the right amount of space open, so
-  // the title and description below don't get shoved down when the photo lands.
-  const detailDims = r.image_width && r.image_height
-    ? ` width="${r.image_width}" height="${r.image_height}"`
+  // With known dimensions the photo's final box is reserved straight away and
+  // the small feed thumbnail (usually already cached) fills it while the full
+  // photo loads, then the full photo fades in over it.
+  const sized = Boolean(r.image_width && r.image_height);
+  const detailDims = sized ? ` width="${r.image_width}" height="${r.image_height}"` : "";
+  const detailBox = sized
+    ? ` detail-image-sized" style="${detailImageBoxStyle(r.image_width, r.image_height, r.thumb_url)}`
     : "";
+  const fadeIn = sized ? ` onload="this.classList.add('is-loaded')"` : "";
 
   detail.innerHTML = `
     ${isArchived ? `<p class="archived-note">Archived. Only you can see this post. Restore it from the Archived tab on your profile.</p>` : ""}
-    ${r.image_url ? `<div class="detail-image"><img src="${r.image_url}" alt=""${detailDims} decoding="async"><button type="button" class="like-btn${isLiked ? " is-liked" : ""}" id="detail-like-btn" aria-label="Like">${ICONS.heart}<span class="like-count">${likedBy.size ? likedBy.size : ""}</span></button></div>` : ""}
+    ${r.image_url ? `<div class="detail-image${detailBox}"><img src="${r.image_url}" alt=""${detailDims} decoding="async" fetchpriority="high"${fadeIn}><button type="button" class="like-btn${isLiked ? " is-liked" : ""}" id="detail-like-btn" aria-label="Like">${ICONS.heart}<span class="like-count">${likedBy.size ? likedBy.size : ""}</span></button></div>` : ""}
     <div class="request-tags">
       <span class="found-badge found-badge-lg" id="request-found-badge"${r.found_recommendation_id ? "" : " hidden"}>${ICONS.check}<span>Found</span></span>
       ${r.category ? `<span class="ticket-cat">${r.category}</span>` : ""}

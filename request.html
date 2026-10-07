@@ -4,7 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Request — Glares</title>
-<link rel="preconnect" href="https://zrlrbucvnadnxsoqtgfd.supabase.co" crossorigin />
+<link rel="preconnect" href="https://wrhgyxavswjcvtkbzmkc.supabase.co" crossorigin />
+<link rel="preconnect" href="https://wrhgyxavswjcvtkbzmkc.supabase.co" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Cormorant+Garamond:wght@500;600&display=swap" />
@@ -27,6 +28,23 @@
   <section id="request-detail" class="request-detail">
     <p class="empty-state">Loading...</p>
   </section>
+  <script>
+    // Tapping a post stores the thumbnail already on screen (js/icons.js);
+    // show it in the photo's final box at once. request.js replaces this.
+    (function () {
+      try {
+        var p = JSON.parse(sessionStorage.getItem("glares:open-post") || "null");
+        if (!p || p.id !== decodeURIComponent(location.hash.slice(1)) || !/^https:\/\//.test(p.thumb) || !(p.w > 0 && p.h > 0)) return;
+        var box = document.createElement("div");
+        box.className = "detail-image detail-image-sized";
+        box.style.width = "min(" + p.w + "px, 100%, calc(70vh * " + p.w + " / " + p.h + "))";
+        box.style.aspectRatio = p.w + " / " + p.h;
+        box.style.backgroundImage = 'url("' + p.thumb.replace(/"/g, "%22") + '")';
+        var detail = document.getElementById("request-detail");
+        detail.replaceChildren(box);
+      } catch (_) {}
+    })();
+  </script>
 
   <div class="promote-box" id="promote-box" style="display:none;">
     <button class="btn btn-ghost" id="promote-btn">Promote this listing</button>

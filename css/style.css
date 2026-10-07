@@ -3202,3 +3202,23 @@ body:not(.profile-page) header.site-header :focus-visible,
   font-size: 13px;
   font-weight: 600;
 }
+
+/* Post page photo with a reserved box (see detailImageBoxStyle in request.js):
+   the thumbnail shows as the box background, the full photo fades in over it. */
+.detail-image.detail-image-sized {
+  display: block;
+  background-color: var(--pill);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.detail-image.detail-image-sized > img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.detail-image.detail-image-sized > img.is-loaded { opacity: 1; }

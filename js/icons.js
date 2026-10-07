@@ -51,3 +51,27 @@ function syncHeaderHeightVar() {
 }
 
 document.addEventListener("DOMContentLoaded", syncHeaderHeightVar);
+
+// Opening a post: remember the photo already shown for it, so the post page
+// can display it instantly while the full-size photo loads. Feed cards carry
+// the full photo's size as width/height; elsewhere it is estimated from the
+// thumbnail, scaled to the 1400px long edge uploads are stored at.
+document.addEventListener("click", (e) => {
+  const link = e.target.closest && e.target.closest('a[href*="request.html#"]');
+  if (!link) return;
+  try {
+    const id = decodeURIComponent(link.getAttribute("href").split("#")[1] || "");
+    const img = link.querySelector("img");
+    if (!id || !img || !img.complete || !img.naturalWidth || !/^https:/.test(img.currentSrc)) {
+      sessionStorage.removeItem("glares:open-post");
+      return;
+    }
+    let w = Number(img.getAttribute("width")), h = Number(img.getAttribute("height"));
+    if (!(w > 0 && h > 0)) {
+      const scale = 1400 / Math.max(img.naturalWidth, img.naturalHeight);
+      w = Math.round(img.naturalWidth * scale);
+      h = Math.round(img.naturalHeight * scale);
+    }
+    sessionStorage.setItem("glares:open-post", JSON.stringify({ id, thumb: img.currentSrc, w, h }));
+  } catch (_) {}
+}, true);
