@@ -4,15 +4,21 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// The members stat shows the real number of accounts plus this offset: there
+// were 36 accounts on 2026-10-07 and the stat read 136, and each new signup
+// adds one from there.
+const MEMBER_COUNT_OFFSET = 100;
+
 async function loadStats() {
-  const [{ count: requestCount }, { count: recCount }] = await Promise.all([
+  const [{ count: requestCount }, { count: recCount }, { count: memberCount }] = await Promise.all([
     supabase.from("requests").select("*", { count: "exact", head: true }).eq("status", "open"),
-    supabase.from("recommendations").select("*", { count: "exact", head: true })
+    supabase.from("recommendations").select("*", { count: "exact", head: true }),
+    supabase.from("profiles").select("*", { count: "exact", head: true })
   ]);
 
   document.getElementById("stat-requests").textContent = requestCount ?? 0;
   document.getElementById("stat-recs").textContent = recCount ?? 0;
-  document.getElementById("stat-members").textContent = 112;
+  document.getElementById("stat-members").textContent = memberCount == null ? "—" : memberCount + MEMBER_COUNT_OFFSET;
 }
 
 async function loadSolved() {
