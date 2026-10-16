@@ -5,9 +5,11 @@ into the new project's storage, resized like new uploads, then repoint rows.
   python3 scripts/copy-old-photos.py --apply    # upload + update rows
 
 Needs SUPABASE_SECRET (new project's secret key) in the environment for --apply.
+With --from <folder> it reads each photo from a downloaded storage backup
+(<folder>/request-images/<path>) instead of downloading it from the old project.
 Re-runnable: rows already pointing at the new project are skipped.
 """
-import io, json, os, subprocess, sys
+import io, json, os, subprocess, sys, urllib.parse
 from PIL import Image, ImageOps
 
 NEW = "https://wrhgyxavswjcvtkbzmkc.supabase.co"
@@ -15,6 +17,7 @@ PUBLISHABLE = "sb_publishable_FcTbYEdACJ_x-kDYtjWGWA_tiT4nwvO"
 OLD_HOST = "zrlrbucvnadnxsoqtgfd.supabase.co"
 BUCKET = "request-images"
 APPLY = "--apply" in sys.argv
+LOCAL_DIR = sys.argv[sys.argv.index("--from") + 1] if "--from" in sys.argv else None
 SECRET = os.environ.get("SUPABASE_SECRET", "")
 if APPLY and not SECRET:
     sys.exit("SUPABASE_SECRET is required for --apply")
@@ -46,9 +49,15 @@ def encode(img, max_edge, quality):
 
 
 def load(url):
-    code, body = curl(["-L", url])
-    if code != 200:
-        raise RuntimeError(f"download HTTP {code}")
+    if LOCAL_DIR:
+        local = os.path.join(LOCAL_DIR, BUCKET, urllib.parse.unquote(object_path(url)))
+        if not os.path.isfile(local):
+            raise RuntimeError(f"not in backup: {object_path(url)}")
+        body = open(local, "rb").read()
+    else:
+        code, body = curl(["-L", url])
+        if code != 200:
+            raise RuntimeError(f"download HTTP {code}")
     img = ImageOps.exif_transpose(Image.open(io.BytesIO(body)))
     if img.mode not in ("RGB", "L"):
         bg = Image.new("RGB", img.size, (255, 255, 255))
