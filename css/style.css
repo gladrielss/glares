@@ -3222,3 +3222,86 @@ body:not(.profile-page) header.site-header :focus-visible,
   transition: opacity .25s ease;
 }
 .detail-image.detail-image-sized > img.is-loaded { opacity: 1; }
+
+/* ---- Landing: the flag line under the wordmark ---- */
+.hero-flag {
+  margin: 0 0 14px;
+  max-width: 19em;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(24px, 3.4vw, 42px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: #fff;
+}
+.hero-flag + .hero-tagline { margin-top: 0; }
+
+/* ---- Landing: what glares is (full-width light band after the hero) ---- */
+.manifesto {
+  background: var(--bg);
+  color: var(--ink);
+  padding: clamp(56px, 9vw, 120px) 24px;
+}
+.manifesto-inner { max-width: 980px; margin: 0 auto; }
+.manifesto-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.manifesto-eyebrow::before { content: ""; width: 28px; height: 2px; background: var(--accent); }
+.manifesto-lead {
+  margin: 0 0 clamp(36px, 6vw, 64px);
+  max-width: 22ch;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(32px, 5.2vw, 60px);
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.manifesto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px 56px;
+}
+.manifesto-item { border-top: 1px solid var(--line); padding-top: 18px; }
+.manifesto-label {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.manifesto-item p { margin: 0; font-size: 17px; line-height: 1.6; color: var(--ink-soft); }
+.manifesto-item strong { font-weight: 700; color: var(--accent); }
+@media (max-width: 600px) {
+  .manifesto { padding: 52px 20px 56px; }
+  .manifesto-grid { grid-template-columns: 1fr; gap: 26px; }
+  .manifesto-item p { font-size: 16px; }
+}
+/* Phone landing header is see-through; give "Sign in" and the feed tabs the same
+   dark pill as the logo and icon buttons so they stay readable over light areas
+   (the manifesto band, bright photos). */
+@media (max-width: 600px) {
+  .landing-header .btn-ghost,
+  .landing-header .feed-tabs-row {
+    background: rgba(4,6,10,.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .landing-header .feed-tabs-row {
+    max-width: max-content;
+    margin-inline: auto;
+    padding: 3px;
+    border-radius: 999px;
+  }
+}

@@ -21,7 +21,9 @@ const CINEMA_RISERS = [
   ".section-card",
   ".store-banner",
   ".solved-eyebrow",
-  ".page-title"
+  ".page-title",
+  ".manifesto-lead",
+  ".manifesto-item"
 ].join(",");
 
 const CINEMA_FAILSAFE_MS = 2200;
